@@ -1,4 +1,4 @@
-export const PAYLINK_ADDRESS = '0xeEDDa8bCdF826DE16356719F22010B0d4736c81A' // Deployed on Shardeum Testnet
+export const PAYLINK_ADDRESS = '0x5Cd33259086699B08c44860B7Dad067048f1CF72' // Deployed on Shardeum Testnet (2026-03-24)
 
 export const PAYLINK_ABI = [
   {
