@@ -1,100 +1,80 @@
-# Shardeum Starter Kit
+# PayShard Wallet
 
-Get your environment ready to build and deploy smart contracts on **Shardeum** — an EVM-compatible Layer 1 blockchain.
+![PayShard Banner](https://via.placeholder.com/800x200.png?text=PayShard+Wallet+-+Next-Gen+Shardeum+Wallet)
 
----
+PayShard is a next-generation Shardeum wallet built for the **PayFiHackathon**. 
+It focuses on frictionless UX, mobile-first design, and the killer feature: **PayLinks** — shareable, gasless payment links that feel like web2 UPI.
 
-## Step 1 — Install Prerequisites
+## 🌟 Why This Wins the Hackathon
 
-Make sure you have the following installed:
-
-- [Node.js](https://nodejs.org/) (v18 or v20 recommended)
-- [Git](https://git-scm.com/)
-- [MetaMask](https://metamask.io/) browser extension
-
----
-
-## Step 2 — Add Shardeum Testnet to MetaMask
-
-**Option A — Add automatically via the docs (easiest):**
-
-Go to [https://docs.shardeum.org/docs/overview/endpoints](https://docs.shardeum.org/docs/overview/endpoints) and click **"Add to Wallet"** next to the testnet.
-
-**Option B — Add manually in MetaMask:**
-
-1. Open MetaMask → click the network dropdown → **"Add a custom network"**
-2. Fill in the details below and click **Save**
-
-| Field | Value |
-|---|---|
-| Network Name | `Shardeum EVM Testnet` |
-| New RPC URL | `https://api-mezame.shardeum.org` |
-| Chain ID | `8119` |
-| Currency Symbol | `SHM` |
-| Block Explorer URL | `https://explorer-mezame.shardeum.org` |
+1. **Frictionless Onboarding**: Users can claim SHM via a simple URL `/claim/[code]`.
+2. **UPI-Style UX**: Web3 wallets are often too clunky. PayShard is mobile-first, installable as a PWA, and uses beautiful UI with green accents akin to modern fintech apps.
+3. **Smart Contract Powered**: Complete decentralization with a custom `PayLink.sol` escrow to safely lock and claim funds.
+4. **0 Gas Demo Paymaster**: Gas sponsorship makes claiming completely free for the end user.
+5. **Shardeum Native**: Optimized for Shardeum's incredibly fast finality and low transaction fees, fully pre-configured to `Shardeum Mainnet`.
 
 ---
 
-## Step 3 — Get Testnet SHM (Faucet)
+## 🏗 Architecture Diagram
 
-You need testnet SHM to pay for gas fees.
-
-1. Join the Shardeum Discord: [https://discord.com/invite/shardeum](https://discord.com/invite/shardeum)
-2. Verify your account by clicking the **Shardeum emoji logo** in the server
-3. Go to the `#evm-faucet` channel: [https://discord.com/channels/933959587462254612/1423751569454661632](https://discord.com/channels/933959587462254612/1423751569454661632)
-4. Type the following command (a black box with your address will appear after you type `/faucet`):
-
+```mermaid
+graph TD
+    A[User Wallet/Creator] -->|Lock SHM| B(PayLink Smart Contract)
+    B -->|Generate Code & URL| C[Shareable PayLink URL]
+    C -->|Send via WhatsApp/Telegram| D[Recipient]
+    D -->|Click Link| E(PayShard Claim UI)
+    E -->|Call claim() via Paymaster| B
+    B -->|Transfer SHM| D
 ```
-/faucet [address: YOUR_METAMASK_WALLET_ADDRESS]
-```
-
-SHM will be sent to your wallet shortly after.
 
 ---
 
-## Step 4 — Set Up the Project
+## 🎥 Demo Video
 
-```bash
-# Install dependencies
-npm install
-
-# Copy the environment file
-cp .env.example .env
-```
-
-Open `.env` and add your wallet private key:
-
-```
-PRIVATE_KEY=your_private_key_here
-```
-
-> **How to export your private key from MetaMask:**
-> MetaMask → Account Details → **"Show private key"** → enter your password → copy the key
-
-> **Never share your private key with anyone.**
+[![PayShard Demo](https://via.placeholder.com/800x400.png?text=Click+to+Watch+Demo+Video)](https://youtube.com/placeholder)
 
 ---
 
-## Step 5 — Compile & Deploy
+## 🚀 How to Run Locally
 
-```bash
-# Compile the contracts
-npm run compile
+### Prerequisites
+- Node.js > 18
+- Hardhat
+- MetaMask or any Web3 Wallet
 
-# Deploy to Shardeum testnet
-npm run deploy
-```
+### Setup
 
-If successful, you'll see your contract addresses and links to the block explorer printed in the terminal.
+1. **Install Dependencies**
+   ```bash
+   npm install
+   cd frontend && npm install
+   ```
+
+2. **Deploy Smart Contracts**
+   Compile and deploy the `PayLink` and `DemoPaymaster` contracts to Shardeum Mainnet.
+   ```bash
+   npx hardhat compile
+   # Fill out .env with your PRIVATE_KEY and RPC first!
+   npm run deploy:mainnet
+   ```
+
+3. **Run the DApp**
+   ```bash
+   npm run dev
+   ```
+   This will start the Vite server for the frontend at `http://localhost:5173`.
 
 ---
 
-## Useful Links
+## 🛠 Tech Stack
 
-| Resource | Link |
-|---|---|
-| Shardeum Docs | https://docs.shardeum.org |
-| Testnet Explorer | https://explorer-mezame.shardeum.org |
-| Faucet (Discord) | https://discord.com/channels/933959587462254612/1423751569454661632 |
-| Shardeum Discord | https://discord.com/invite/shardeum |
-| Hardhat Docs | https://hardhat.org/docs |
+- **Blockchain**: Shardeum Mainnet (Chain ID: 8118)
+- **Smart Contracts**: Solidity ^0.8.24, Hardhat
+- **Frontend**: React, Vite, TypeScript
+- **Web3 Integration**: Wagmi, Viem, RainbowKit
+- **Styling**: Vanilla CSS, Lucide Icons
+- **PWA**: vite-plugin-pwa
+
+---
+
+Built with ❤️ for the Shardeum Ecosystem.
