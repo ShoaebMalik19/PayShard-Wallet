@@ -1,51 +1,29 @@
+import { useState } from 'react'
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
-import { useAccount, useConnect, useDisconnect } from 'wagmi'
-import { Home, Send as SendIcon, QrCode, Link as LinkIcon } from 'lucide-react'
+import { useAccount, useConnect, useDisconnect, useBalance } from 'wagmi'
+import { Home, Send as SendIcon, QrCode, Link2, Menu, X, Zap } from 'lucide-react'
+import ShaderBackground from '@/components/ui/shader-background'
 import Dashboard from './pages/Dashboard'
-import Send from './pages/Send'
+import SendPage from './pages/Send'
 import Receive from './pages/Receive'
 import CreatePayLink from './pages/CreatePayLink'
 import ClaimPayLink from './pages/ClaimPayLink'
 
-function ConnectButton() {
+function App() {
+  const location = useLocation()
   const { address, isConnected } = useAccount()
   const { connect, connectors, isPending } = useConnect()
   const { disconnect } = useDisconnect()
+  const { data: balance } = useBalance({ address })
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  if (isConnected && address) {
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <span className="address-pill" style={{ fontSize: '0.8rem', padding: '0.4rem 0.75rem' }}>
-          {address.slice(0, 6)}...{address.slice(-4)}
-        </span>
-        <button 
-          onClick={() => disconnect()}
-          style={{
-            padding: '0.5rem 1rem',
-            borderRadius: '0.5rem',
-            border: '1px solid var(--border)',
-            background: 'var(--bg-hover)',
-            color: 'var(--text)',
-            cursor: 'pointer',
-            fontSize: '0.8rem',
-            fontWeight: 600,
-          }}
-        >
-          Disconnect
-        </button>
-      </div>
-    )
-  }
+  const isClaim = location.pathname.startsWith('/claim')
 
   const handleConnect = async () => {
-    // Try wagmi connectors first
     if (connectors.length > 0) {
-      const connector = connectors[0]
-      connect({ connector })
+      connect({ connector: connectors[0] })
       return
     }
-    
-    // Fallback: direct window.ethereum call
     if (typeof window !== 'undefined' && (window as any).ethereum) {
       try {
         await (window as any).ethereum.request({ method: 'eth_requestAccounts' })
@@ -58,73 +36,122 @@ function ConnectButton() {
     }
   }
 
-  return (
-    <button
-      onClick={handleConnect}
-      disabled={isPending}
-      style={{
-        padding: '0.6rem 1.25rem',
-        borderRadius: '0.5rem',
-        border: 'none',
-        background: 'var(--accent)',
-        color: '#000',
-        cursor: isPending ? 'wait' : 'pointer',
-        fontSize: '0.875rem',
-        fontWeight: 700,
-      }}
-    >
-      {isPending ? 'Connecting...' : 'Connect Wallet'}
-    </button>
-  )
-}
+  const navItems = [
+    { to: '/', icon: <Home />, label: 'Dashboard' },
+    { to: '/send', icon: <SendIcon />, label: 'Send' },
+    { to: '/receive', icon: <QrCode />, label: 'Receive' },
+    { to: '/paylink', icon: <Link2 />, label: 'PayLinks' },
+  ]
 
-function App() {
-  const location = useLocation()
-  
-  // Hide bottom nav on claim page for a cleaner look
-  const hideNav = location.pathname.startsWith('/claim')
+  // Claim page: render without sidebar
+  if (isClaim) {
+    return (
+      <>
+        <ShaderBackground />
+        <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh' }}>
+          <div className="main-content" style={{ maxWidth: 600, margin: '0 auto' }}>
+            <Routes>
+              <Route path="/claim/:code" element={<ClaimPayLink />} />
+            </Routes>
+          </div>
+        </div>
+      </>
+    )
+  }
 
   return (
-    <div className="layout-container">
-      <header className="header">
-        <div className="logo">
-          <LinkIcon className="logo-icon" size={24} />
+    <>
+      <ShaderBackground />
+
+      {/* Mobile hamburger */}
+      <button className="mobile-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
+        {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+      </button>
+
+      {/* Sidebar overlay (mobile) */}
+      <div
+        className={`sidebar-overlay ${sidebarOpen ? 'open' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+      />
+
+      {/* Sidebar */}
+      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-logo">
+          <Zap size={22} />
           <span>PayShard</span>
         </div>
-        <ConnectButton />
+
+        <nav className="sidebar-nav">
+          {navItems.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={`sidebar-link ${location.pathname === item.to ? 'active' : ''}`}
+              onClick={() => setSidebarOpen(false)}
+            >
+              {item.icon}
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="sidebar-footer">
+          <div className="sidebar-network">
+            <span className="dot" />
+            Shardeum Testnet
+          </div>
+        </div>
+      </aside>
+
+      {/* Top bar */}
+      <header className="topbar">
+        {isConnected && address ? (
+          <>
+            <div className="topbar-balance">
+              {balance ? (Number(balance.value) / 1e18).toFixed(4) : '0.0000'}
+              <span className="symbol">SHM</span>
+            </div>
+            <div
+              className="topbar-address"
+              onClick={() => {
+                navigator.clipboard.writeText(address)
+              }}
+              title="Click to copy"
+            >
+              {address.slice(0, 6)}…{address.slice(-4)}
+            </div>
+            <button
+              className="btn-secondary"
+              onClick={() => disconnect()}
+              style={{ padding: '8px 16px', fontSize: '0.8rem' }}
+            >
+              Disconnect
+            </button>
+          </>
+        ) : (
+          <button
+            className="btn-primary"
+            onClick={handleConnect}
+            disabled={isPending}
+            style={{ padding: '10px 24px' }}
+          >
+            {isPending ? 'Connecting…' : 'Connect Wallet'}
+          </button>
+        )}
       </header>
 
-      <main className="main-content">
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/send" element={<Send />} />
-          <Route path="/receive" element={<Receive />} />
-          <Route path="/paylink" element={<CreatePayLink />} />
-          <Route path="/claim/:code" element={<ClaimPayLink />} />
-        </Routes>
-      </main>
-
-      {!hideNav && (
-        <nav className="bottom-nav">
-          <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
-            <Home />
-            <span>Home</span>
-          </Link>
-          <Link to="/send" className={`nav-item ${location.pathname === '/send' ? 'active' : ''}`}>
-            <SendIcon />
-            <span>Send</span>
-          </Link>
-          <Link to="/receive" className={`nav-item ${location.pathname === '/receive' ? 'active' : ''}`}>
-            <QrCode />
-            <span>Receive</span>
-          </Link>
-          <Link to="/paylink" className={`nav-item ${location.pathname === '/paylink' ? 'active' : ''}`}>
-            <LinkIcon />
-            <span>PayLink</span>
-          </Link>
-        </nav>
-      )}
-    </div>
+      {/* Main content */}
+      <div className="main-wrapper">
+        <div className="main-content fade-in">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/send" element={<SendPage />} />
+            <Route path="/receive" element={<Receive />} />
+            <Route path="/paylink" element={<CreatePayLink />} />
+          </Routes>
+        </div>
+      </div>
+    </>
   )
 }
 

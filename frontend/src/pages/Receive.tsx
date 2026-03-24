@@ -1,60 +1,80 @@
 import { useAccount } from 'wagmi'
 import { QRCodeSVG } from 'qrcode.react'
-import { Copy, Wallet } from 'lucide-react'
+import { Copy, CheckCircle } from 'lucide-react'
+import { useState } from 'react'
 
 export default function Receive() {
-  const { address, isConnected } = useAccount()
+  const { address } = useAccount()
+  const [copied, setCopied] = useState(false)
 
   const copyAddress = () => {
-    if (address) {
-      navigator.clipboard.writeText(address)
-      alert('Address copied to clipboard!')
-    }
+    if (!address) return
+    navigator.clipboard.writeText(address)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
-  if (!isConnected) {
+  if (!address) {
     return (
-      <div className="flex-center" style={{ marginTop: '2rem' }}>
-        <p>Please connect your wallet first to see your receive address.</p>
+      <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+        <p className="page-subtitle">Connect your wallet to generate a receive address.</p>
       </div>
     )
   }
 
   return (
-    <div className="flex-center">
-      <h2 className="page-title" style={{ alignSelf: 'flex-start' }}>Receive SHM</h2>
-      <p className="page-subtitle" style={{ alignSelf: 'flex-start' }}>Show this QR code to receive funds securely.</p>
-      
-      <div className="card" style={{ width: '100%', textAlign: 'center' }}>
-        <div className="qr-container" style={{ margin: '1rem auto' }}>
-          <QRCodeSVG value={address || ''} size={200} bgColor="#ffffff" fgColor="#121212" level="L" marginSize={2} />
-        </div>
-        
-        <div style={{ marginTop: '1.5rem', marginBottom: '0.5rem' }}>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Wallet Address</span>
-        </div>
-        <div className="address-pill" style={{ display: 'inline-flex', padding: '0.75rem 1.25rem' }}>
-          {address?.slice(0, 10)}...{address?.slice(-8)}
-          <button 
-            onClick={copyAddress} 
-            style={{ 
-              background: 'none', 
-              border: 'none', 
-              color: 'var(--accent)', 
-              cursor: 'pointer', 
-              display: 'flex', 
-              alignItems: 'center', 
-              marginLeft: '0.5rem' 
-            }}
-          >
-            <Copy size={16} />
-          </button>
-        </div>
-        
-        <button className="btn-primary" onClick={copyAddress} style={{ marginTop: '2rem' }}>
-          Copy Full Address
-        </button>
+    <>
+      <div className="page-header">
+        <h1 className="page-title">Receive SHM</h1>
+        <p className="page-subtitle">Share your address or QR code to receive Shardeum tokens.</p>
       </div>
-    </div>
+
+      <div className="receive-center">
+        <div className="card" style={{ maxWidth: 480, width: '100%' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
+            <div className="qr-container">
+              <QRCodeSVG
+                value={address}
+                size={220}
+                bgColor="#ffffff"
+                fgColor="#121212"
+                level="H"
+                includeMargin={false}
+              />
+            </div>
+
+            <div style={{ width: '100%' }}>
+              <label className="form-label" style={{ marginBottom: 8, display: 'block', textAlign: 'left' }}>Your Wallet Address</label>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '12px 14px',
+                background: 'var(--bg-hover)',
+                borderRadius: 'var(--radius)',
+                border: '1px solid var(--border)',
+              }}>
+                <span style={{
+                  flex: 1,
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: '0.82rem',
+                  color: 'var(--text-secondary)',
+                  wordBreak: 'break-all',
+                }}>
+                  {address}
+                </span>
+                <button
+                  onClick={copyAddress}
+                  className="btn-secondary"
+                  style={{ padding: '6px 12px', fontSize: '0.8rem', flexShrink: 0 }}
+                >
+                  {copied ? <><CheckCircle size={14} /> Copied</> : <><Copy size={14} /> Copy</>}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
