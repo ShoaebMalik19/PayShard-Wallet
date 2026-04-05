@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import { useAccount, useConnect, useDisconnect, useBalance } from 'wagmi'
-import { Home, Send as SendIcon, QrCode, Link2, Menu, X, Zap } from 'lucide-react'
+import { Home, Send as SendIcon, QrCode, Link2, Menu, X, Zap, Wallet } from 'lucide-react'
 import ShaderBackground from '@/components/ui/shader-background'
+import { LiquidButton } from '@/components/ui/liquid-glass-button'
 import Dashboard from './pages/Dashboard'
 import SendPage from './pages/Send'
 import Receive from './pages/Receive'
@@ -43,13 +44,13 @@ function App() {
     { to: '/paylink', icon: <Link2 />, label: 'PayLinks' },
   ]
 
-  // Claim page: render without sidebar
+  // Claim page: render without sidebar, truly centered
   if (isClaim) {
     return (
       <>
         <ShaderBackground />
-        <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh' }}>
-          <div className="main-content" style={{ maxWidth: 600, margin: '0 auto' }}>
+        <div className="claim-wrapper" style={{ position: 'relative', zIndex: 1 }}>
+          <div className="claim-container">
             <Routes>
               <Route path="/claim/:code" element={<ClaimPayLink />} />
             </Routes>
@@ -129,14 +130,15 @@ function App() {
             </button>
           </>
         ) : (
-          <button
-            className="btn-primary"
+          <LiquidButton
             onClick={handleConnect}
             disabled={isPending}
-            style={{ padding: '10px 24px' }}
+            className="connect-glass-btn"
+            size="lg"
           >
+            <Wallet size={16} />
             {isPending ? 'Connecting…' : 'Connect Wallet'}
-          </button>
+          </LiquidButton>
         )}
       </header>
 

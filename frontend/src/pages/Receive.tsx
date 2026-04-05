@@ -1,6 +1,6 @@
 import { useAccount } from 'wagmi'
 import { QRCodeSVG } from 'qrcode.react'
-import { Copy, CheckCircle } from 'lucide-react'
+import { Copy, CheckCircle, QrCode, Wallet } from 'lucide-react'
 import { useState } from 'react'
 
 export default function Receive() {
@@ -16,26 +16,37 @@ export default function Receive() {
 
   if (!address) {
     return (
-      <div style={{ textAlign: 'center', padding: '3rem 0' }}>
-        <p className="page-subtitle">Connect your wallet to generate a receive address.</p>
-      </div>
+      <>
+        <div className="page-header" style={{ textAlign: 'center' }}>
+          <h1 className="page-title">Receive SHM</h1>
+          <p className="page-subtitle">Share your address or QR code to receive Shardeum tokens.</p>
+        </div>
+        <div className="empty-state-center">
+          <div className="card" style={{ maxWidth: 420, width: '100%', textAlign: 'center', padding: '48px 32px' }}>
+            <Wallet size={48} color="var(--accent)" style={{ marginBottom: '1.25rem', opacity: 0.6 }} />
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.6 }}>
+              Connect your wallet to generate<br />a receive address and QR code.
+            </p>
+          </div>
+        </div>
+      </>
     )
   }
 
   return (
     <>
-      <div className="page-header">
+      <div className="page-header" style={{ textAlign: 'center' }}>
         <h1 className="page-title">Receive SHM</h1>
         <p className="page-subtitle">Share your address or QR code to receive Shardeum tokens.</p>
       </div>
 
       <div className="receive-center">
-        <div className="card" style={{ maxWidth: 480, width: '100%' }}>
+        <div className="card" style={{ maxWidth: 460, width: '100%' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
             <div className="qr-container">
               <QRCodeSVG
                 value={address}
-                size={220}
+                size={200}
                 bgColor="#ffffff"
                 fgColor="#121212"
                 level="H"

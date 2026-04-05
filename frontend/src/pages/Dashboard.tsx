@@ -71,10 +71,10 @@ export default function Dashboard() {
 
   if (!isConnected) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', textAlign: 'center' }}>
-        <Wallet size={56} color="var(--accent)" style={{ marginBottom: '1.5rem' }} />
+      <div className="empty-state-center">
+        <Wallet size={56} color="var(--accent)" style={{ marginBottom: '1.5rem', opacity: 0.7 }} />
         <h2 className="page-title">Welcome to PayShard</h2>
-        <p className="page-subtitle">Connect your wallet to access the next-generation Shardeum PayFi dashboard.</p>
+        <p className="page-subtitle" style={{ maxWidth: 400 }}>Connect your wallet to access the next-generation Shardeum PayFi dashboard.</p>
       </div>
     )
   }

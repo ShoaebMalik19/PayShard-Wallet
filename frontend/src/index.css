@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Force dark mode for Tailwind utility classes */
+:root {
+  color-scheme: dark;
+}
+
 /* ═══════════════════════════════════════════════════════════
    PayShard Wallet — Desktop-First Design System
    ═══════════════════════════════════════════════════════════ */
@@ -212,12 +217,15 @@ button { font-family: inherit; }
   min-height: 100vh;
   position: relative;
   z-index: 1;
+  display: flex;
+  justify-content: center;
 }
 
 .main-content {
-  padding: 36px 40px;
-  max-width: 1200px;
+  padding: 36px 48px;
+  max-width: 1100px;
   width: 100%;
+  margin: 0 auto;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -577,11 +585,31 @@ button { font-family: inherit; }
 }
 
 /* ═══════════════════════════════════════════════════════════
-   CLAIM PAGE — CENTERED
+   CLAIM PAGE — TRUE CENTER (full viewport)
    ═══════════════════════════════════════════════════════════ */
+.claim-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 24px;
+}
+
 .claim-container {
-  max-width: 520px;
-  margin: 60px auto;
+  max-width: 460px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SEND PAGE — CENTERED CARD
+   ═══════════════════════════════════════════════════════════ */
+.send-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -592,6 +620,27 @@ button { font-family: inherit; }
   flex-direction: column;
   align-items: center;
   text-align: center;
+  width: 100%;
+}
+
+/* Empty state — vertically centered prompt */
+.empty-state-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CONNECT BUTTON (Liquid Glass)
+   ═══════════════════════════════════════════════════════════ */
+.connect-glass-btn {
+  color: #00D166;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
 }
 
 /* ═══════════════════════════════════════════════════════════
